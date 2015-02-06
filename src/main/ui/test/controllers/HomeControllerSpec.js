@@ -1,0 +1,40 @@
+'use strict';
+
+describe("angularApp module", function() {
+  beforeEach(module('angularApp'));
+
+  describe('HomeController', function() {
+    var controller, scope, deferred;
+    var currentTime = 123456789;
+    var TimeService = { getCurrentTime : function() { } };
+
+    beforeEach(inject(function(_$rootScope_, $controller, $q) {
+      scope = _$rootScope_.$new();
+      deferred = $q.defer();
+      
+      controller = $controller("HomeController", { 
+        $scope : scope,
+        currentTime : currentTime,
+        TimeService : TimeService
+      });
+    }));
+
+    it('initializes correctly', function() {
+      expect(scope.currentTime).toBe(currentTime);
+    });
+    
+    it('refresh fetches a new time and updates the scope', function() {
+      var newTime = 987654321;
+
+      spyOn(TimeService, 'getCurrentTime').and.returnValue(deferred.promise);
+      scope.refreshTime();      
+      expect(TimeService.getCurrentTime).toHaveBeenCalled();
+
+      deferred.resolve(newTime);
+      scope.$root.$digest();
+      expect(scope.currentTime).toBe(newTime);
+    });
+
+  });
+
+});
