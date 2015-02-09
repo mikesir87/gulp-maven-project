@@ -9,7 +9,7 @@
       });
     }
   };
-
+// this should not be copied over
   angular.module("angularApp")
       .controller("HomeController", HomeController);
 })();

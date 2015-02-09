@@ -8,8 +8,8 @@ describe("angularApp module", function() {
     var currentTime = 123456789;
     var TimeService = { getCurrentTime : function() { } };
 
-    beforeEach(inject(function(_$rootScope_, $controller, $q) {
-      scope = _$rootScope_.$new();
+    beforeEach(inject(function($rootScope, $controller, $q) {
+      scope = $rootScope.$new();
       deferred = $q.defer();
       
       controller = $controller("HomeController", { 
