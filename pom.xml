@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.mikesir87</groupId>
-  <artifactId>gulp-archetype</artifactId>
+  <artifactId>gulp-demo-project</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>war</packaging>
-  <name>Gulp Barebones Project</name>
+  <name>Gulp Demo Project</name>
 
   <build>
     <pluginManagement>
@@ -14,7 +14,7 @@
         <plugin>
           <groupId>com.github.eirslett</groupId>
           <artifactId>frontend-maven-plugin</artifactId>
-          <version>0.0.21-SNAPSHOT</version>
+          <version>0.0.22</version>
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
@@ -28,6 +28,33 @@
           <groupId>org.wildfly.plugins</groupId>
           <artifactId>wildfly-maven-plugin</artifactId>
           <version>1.0.2.Final</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <versionRange>[0.0.0,)</versionRange>
+                    <goals>
+                      <goal>npm</goal>
+                      <goal>gulp</goal>
+                      <goal>grunt</goal>
+                      <goal>bower</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -86,43 +113,19 @@
               <arguments>install</arguments>
             </configuration>
           </execution>
+          <execution>
+            <id>gulp build:prod</id>
+            <goals>
+              <goal>gulp</goal>
+            </goals>
+            <configuration>
+              <arguments>build:prod</arguments>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-
-    <profile>
-      <id>skip-gulp</id>
-      <properties>
-        <gulp.doBuild>false</gulp.doBuild>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>gulp-build</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>gulp build:prod</id>
-                <goals>
-                  <goal>gulp</goal>
-                </goals>
-                <configuration>
-                  <arguments>build:prod</arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <dependencies>
     <dependency>
@@ -150,7 +153,7 @@
     <javaEE.version>7.0</javaEE.version>
     <java.version.source>1.7</java.version.source>
     <java.version.target>${java.version.source}</java.version.target>
-    <deployment.contextRoot>/gulp-archetype</deployment.contextRoot>
+    <deployment.contextRoot>/gulp-demo-project</deployment.contextRoot>
     <gulp.doBuild>true</gulp.doBuild>
   </properties>
 </project>
