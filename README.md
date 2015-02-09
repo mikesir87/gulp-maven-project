@@ -42,7 +42,7 @@ The listing below outlines the additions that are made to the normal war file la
 ## Gulp tasks
 
 The default gulp task will do the following:
-- Combine all bower dependencies into a vendor.json (managed through /vendor.json)
+- Combine all bower dependencies into a vendor.js (managed through /vendor.json)
 - Combine all app JavaScript into a single app.js
 - Build all LESS stylesheets
 - Combine all partials and drop into an Angular templatecache

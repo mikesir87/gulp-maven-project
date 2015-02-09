@@ -28,7 +28,7 @@ var SOURCE_BASE_DIR = "src/main/ui";
 var BUILD_BASE_DIR = "src/main/webapp";
 
 var WATCH_PROXIES = [
-  { source: '/api', target: 'http://localhost:8080/gulp-archetype/api' }
+  { source: '/api', target: 'http://localhost:8080/gulp-demo-project/api' }
 ];
 
 
