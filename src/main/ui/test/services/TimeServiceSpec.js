@@ -30,9 +30,11 @@ describe("angularApp module", function() {
       var resolved = false;
       promise.then(function(timeResult) { 
         resolved = true;
-        expect(timeResult).toEqual(currentTime.time); 
+        expect(timeResult).toEqual(currentTime.time);
       });
       $rootScope.$digest();
+      
+      expect(resolved).toBe(true);
     });
 
   });
