@@ -32,5 +32,12 @@
     "karma-junit-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^0.1.4",
     "run-sequence": "^1.0.2"
+  },
+  "dependencies": {
+    "finalhandler": "^0.3.5",
+    "gulp-bower": "0.0.10",
+    "http": "0.0.0",
+    "http-proxy": "^1.11.1",
+    "serve-static": "^1.9.2"
   }
 }

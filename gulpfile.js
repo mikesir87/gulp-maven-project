@@ -2,6 +2,7 @@ var del                    = require('del'),
     gulp                   = require('gulp'),
     angularFilesort        = require('gulp-angular-filesort'),
     angularTemplateCache   = require('gulp-angular-templatecache'),
+    bower                  = require('gulp-bower'),
     concat                 = require('gulp-concat'),
     expect                 = require('gulp-expect-file'),
     gulpIgnore             = require('gulp-ignore'),
@@ -16,19 +17,25 @@ var del                    = require('del'),
     runSequence            = require('run-sequence'),
     uglify                 = require('gulp-uglify'),
     watch                  = require('gulp-watch'),
-    webserver              = require('gulp-webserver');
+    http                   = require('http'),
+    httpProxy              = require('http-proxy'),
+    serveStatic            = require('serve-static'),
+    finalhandler           = require('finalhandler');
 
 
 var ENV_PROD = "PROD";
 var ENV_DEV = "DEV";
 var ENV = ENV_DEV;
 
+var DEPLOYMENT_NAME = "gulp-demo-project";
 var MODULE_NAME = "angularApp";
 var SOURCE_BASE_DIR = "src/main/ui";
-var BUILD_BASE_DIR = "src/main/webapp";
+var TARGET_DIR = "target/gulp-webapp";
+var BUILD_BASE_DIR = TARGET_DIR + "/" + DEPLOYMENT_NAME;
+var BOWER_DIR = TARGET_DIR + "/bower_components";
 
-var WATCH_PROXIES = [
-  { source: '/api', target: 'http://localhost:8080/gulp-demo-project/api' }
+var PROXY_PATHS = [
+  '/api/'
 ];
 
 
@@ -69,6 +76,9 @@ var source = {
 };
 
 var build = {
+  bower : {
+    dir : BOWER_DIR
+  },
   scripts : {
     dir : BUILD_BASE_DIR + "/js",
     vendor : { name : "vendor.js" },
@@ -85,7 +95,7 @@ var build = {
   },
   index : {
     file : BUILD_BASE_DIR + "/index.html",
-    ignore : "../webapp"
+    ignore : "../../../target/gulp-webapp/" + DEPLOYMENT_NAME
   },
   dir : BUILD_BASE_DIR,
   watch : BUILD_BASE_DIR + "/**"
@@ -100,10 +110,14 @@ var build = {
  * Clean the webapp folder. Remove all the 
  */
 gulp.task('clean', function(callback) {
-  return del([ build.scripts.dir, 
-               build.styles.dir, 
-               build.templates.dir,
-               build.index.file], callback);
+  return del([ TARGET_DIR ], callback);
+});
+
+/**
+ * Install bower components
+ */
+gulp.task('bowerInstall', function(callback) {
+  return bower({ directory : BOWER_DIR });
 });
 
 
@@ -159,7 +173,7 @@ gulp.task('templates', function() {
  */
 gulp.task('styles:theme', function() {
   var styles = gulp.src(source.styles.theme.files)
-      .pipe(less({ paths : [source.styles.theme.dir ] }))
+      .pipe(less({ paths : [BOWER_DIR, source.styles.theme.dir ] }))
       .pipe(concat(build.styles.theme.name));
   
   if (ENV == ENV_PROD)
@@ -174,7 +188,7 @@ gulp.task('styles:theme', function() {
  */
 gulp.task('styles:custom', function() {
   var styles = gulp.src(source.styles.custom.files)
-      .pipe(less({paths : [source.styles.custom.dir]}))
+      .pipe(less({paths : [BOWER_DIR, source.styles.custom.dir]}))
   if (ENV == ENV_PROD)
     styles.pipe(minifyCSS({keepSpecialComments : 1}));
   
@@ -228,14 +242,43 @@ gulp.task('watch', function() {
   // Using livereload for listening because it's much more responsive than the
   // livereload found in the webserver
   livereload.listen();
-  watch(build.watch, function(evt) { 
+  watch(build.watch, function(evt) {
     livereload.changed(evt);
   });
 
-  return gulp.src(build.dir).pipe(webserver({
-    proxies : WATCH_PROXIES
-  }));
-  
+  gulp.start('serve');
+});
+
+
+gulp.task('serve', function(callback) {
+  var numProxyConfigs = PROXY_PATHS.length;
+
+  var serve = serveStatic(TARGET_DIR);  // static content handler
+  var proxy = httpProxy.createProxyServer({ target : { host : 'localhost', port : '8080' }});  // proxy handler
+  var server = http.createServer(function(req, res) {  // actual webserver
+    for (var i = 0; i < numProxyConfigs; i++) {
+      if (req.url.indexOf(PROXY_PATHS[i]) > -1) {
+        return proxy.web(req, res, {
+          target: 'http://localhost:8080'
+        });
+      }
+    }
+
+    if (req.url == "/") {
+      res.writeHead(301, { 'Location': '/' + DEPLOYMENT_NAME + '/' });
+      res.end();
+      return;
+    }
+
+    var done = finalhandler(req, res)
+    serve(req, res, done);
+  });
+
+  server.on('upgrade', function (req, socket, head) {
+    proxy.ws(req, socket, head);
+  });
+
+  server.listen(8000);
 });
 
 
@@ -255,7 +298,8 @@ gulp.task('test', function(callback) {
  */
 gulp.task('build', function(callback) {
   console.log("Build using environment: " + ENV);
-  return runSequence('clean', 
+  return runSequence('clean',
+      'bowerInstall',
       ['styles:theme', 'styles:custom', 'scripts:vendor', 'scripts:app', 'templates'], 
       'app:index',
       'test',

@@ -71,6 +71,9 @@
                 <include>**/jboss-web.xml</include>
               </includes>
             </resource>
+            <resource>
+              <directory>target/gulp-webapp/${project.artifactId}</directory>
+            </resource>
           </webResources>
         </configuration>
       </plugin>
@@ -99,15 +102,6 @@
             <id>npm install</id>
             <goals>
               <goal>npm</goal>
-            </goals>
-            <configuration>
-              <arguments>install</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>bower install</id>
-            <goals>
-              <goal>bower</goal>
             </goals>
             <configuration>
               <arguments>install</arguments>

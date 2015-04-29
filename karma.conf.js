@@ -2,9 +2,9 @@ module.exports = function(config) {
   config.set({
     basePath : './',
     files : [
-      'src/main/ui/bower_components/angular/angular.js',
-      'src/main/ui/bower_components/angular-ui-router/release/angular-ui-router.js',
-      'src/main/ui/bower_components/angular-mocks/angular-mocks.js',
+      'target/gulp-webapp/bower_components/angular/angular.js',
+      'target/gulp-webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
+      'target/gulp-webapp/bower_components/angular-mocks/angular-mocks.js',
       'src/main/ui/app/**/*.js',
       'src/main/ui/test/**/*.js'
     ],
