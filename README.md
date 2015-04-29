@@ -6,7 +6,9 @@ This project serves as a demo of using Gulp/Bower/Karma in a Maven project.  If 
 
 Building Single-Page Applications (SPA) in war projects can be quite tricky.  Sure, you could include the _bower_components_ in your webapp, include 30+ script tags in your html pages, and not worry about minified JavaScript code.  But, there's a better way (for you and your users)!
 
-But, figuring out how to plug in various Node tools can be tricky in a Java context.  This project serves as an example.  
+But, figuring out how to plug in various Node tools can be tricky in a Java context.  This project serves as an example. 
+
+The Gulp configuration takes the code from __src/main/ui__ and creates the distributable in target/gulp-webapp. This ensures that built code is not in the source branch, preventing accidental commits and funky war files.
 
 ## Project Structure
 
@@ -14,7 +16,6 @@ The listing below outlines the additions that are made to the normal war file la
 
 ```
 /
-  .bowerrc           - bower configuration
   bower.json         - bower dependencies config file 
   gulpfile.js        - gulp task file
   karma.conf.js      - karma testing config file
@@ -37,6 +38,9 @@ The listing below outlines the additions that are made to the normal war file la
       directives/
       filters/
       services/
+  target/
+    bower_components - where the bower components are installed
+    ${project.name}  - where the actual distributable code is created
 ```
 
 ## Gulp tasks
@@ -48,9 +52,9 @@ The default gulp task will do the following:
 - Combine all partials and drop into an Angular templatecache
 - Run all tests
 - Set up a webserver that:
-  - Serves files from src/main/webapp (the built code)
+  - Serves files from target/gulp-webapp/${project.name} (the built code)
   - Proxies API requests throw the webserver to your underlying Wildfly server
-  - Starts a livereload server, watching the src/main/webapp folder
+  - Starts a livereload server, watching the target/gulp-webapp/${project.name} folder
 
 If running using the **build:prod** task, all the above is completed, minus the webserver.  In addition, all stylesheets and JavaScript is minified (uglified).  This is the task that is used during a Maven build.
 
