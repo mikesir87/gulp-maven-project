@@ -7,6 +7,8 @@ describe("angularApp module", function() {
     var controller, scope, deferred;
     var currentTime = 123456789;
     var TimeService = { getCurrentTime : function() { } };
+    var timeoutFn = null;
+    var timeout = function(ele) { timeoutFn = ele; };
 
     beforeEach(inject(function($rootScope, $controller, $q) {
       scope = $rootScope.$new();
@@ -15,7 +17,8 @@ describe("angularApp module", function() {
       controller = $controller("HomeController", { 
         $scope : scope,
         currentTime : currentTime,
-        TimeService : TimeService
+        TimeService : TimeService,
+        $timeout : timeout
       });
     }));
 
@@ -28,6 +31,9 @@ describe("angularApp module", function() {
 
       spyOn(TimeService, 'getCurrentTime').and.returnValue(deferred.promise);
       controller.refreshTime();
+      expect(timeoutFn).not.toBeNull();
+      
+      timeoutFn();
       expect(TimeService.getCurrentTime).toHaveBeenCalled();
 
       deferred.resolve(newTime);

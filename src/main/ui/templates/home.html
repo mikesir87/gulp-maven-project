@@ -4,7 +4,8 @@
     <p>This is a home page!</p>
     <p>
       Current time is: <span id="current-time-display">{{ctrl.currentTime}}</span>
-      <a id="refresh-button" href="javascript:void(0)" class="btn btn-xs btn-primary" ng-click="ctrl.refreshTime()">(refresh)</a>
+      <a id="refresh-button" href="javascript:void(0)" class="btn btn-xs btn-primary" ng-click="ctrl.refreshTime()" ng-show="!ctrl.fetching">(refresh)</a>
+      <a class="btn btn-xs btn-primary disabled" ng-show="ctrl.fetching" disabled><i class="fa fa-spin fa-refresh"></i> refreshing...</a>
     </p>
   </div>
 </div>
