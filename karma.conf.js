@@ -2,10 +2,10 @@ module.exports = function(config) {
   config.set({
     basePath : './',
     files : [
-      'target/gulp-webapp/bower_components/angular/angular.js',
-      'target/gulp-webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
+      'target/gulp-webapp/gulp-demo-project/js/vendor.js',
+      'target/gulp-webapp/gulp-demo-project/js/app.js',
+      'target/gulp-webapp/gulp-demo-project/js/templates.js',
       'target/gulp-webapp/bower_components/angular-mocks/angular-mocks.js',
-      'src/main/ui/app/**/*.js',
       'src/main/ui/test/**/*.js'
     ],
     frameworks : ['jasmine'],

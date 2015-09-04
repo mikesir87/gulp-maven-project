@@ -121,9 +121,9 @@ gulp.task('bowerInstall', function(callback) {
 gulp.task('scripts:app', function() {
   return gulp.src(source.scripts.app.files)
       .pipe(gulpIgnore.exclude("**/*Spec.js"))
-      .pipe(gulpIf(ENV == ENV_PROD, concat(build.scripts.app.name)))
-      .pipe(gulpIf(ENV == ENV_PROD), ngAnnotate())
-      .pipe(gulpIf(ENV == ENV_PROD), uglify())
+      .pipe(concat(build.scripts.app.name))
+      .pipe(gulpIf(ENV == ENV_PROD, ngAnnotate()))
+      .pipe(gulpIf(ENV == ENV_PROD, uglify()))
       .pipe(gulp.dest(build.scripts.dir));
 });
 
@@ -200,8 +200,7 @@ gulp.task('watch', function() {
    */
   watch(source.scripts.app.watch,   function() { gulp.start('scripts:app'); gulp.start('app:index'); });
   watch(source.templates.watch,     function() { gulp.start('templates') });
-  watch(source.styles.theme.watch,  function() { gulp.start('styles:theme') });
-  watch(source.styles.custom.watch, function() { gulp.start('styles:custom') });
+  watch(source.styles.watch,        function() { gulp.start('styles') });
   watch(source.app.watch,           function() { gulp.start('app:index') });
   
   // Using livereload for listening because it's much more responsive than the
@@ -254,7 +253,7 @@ gulp.task('test', function(callback) {
   return karma.start({
     configFile : __dirname + '/karma.conf.js',
     singleRun : true
-  }, callback);
+  }, function() { callback() });
 });
 
 /**
