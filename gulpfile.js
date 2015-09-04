@@ -5,6 +5,7 @@ var del                    = require('del'),
     bower                  = require('gulp-bower'),
     concat                 = require('gulp-concat'),
     expect                 = require('gulp-expect-file'),
+    gulpIf                 = require('gulp-if'),
     gulpIgnore             = require('gulp-ignore'),
     inject                 = require('gulp-inject'),
     karma                  = require('karma').server,
@@ -118,16 +119,12 @@ gulp.task('bowerInstall', function(callback) {
  * Concat all app scripts. Performs minification when running in prod mode
  */
 gulp.task('scripts:app', function() {
-  var scripts = gulp.src(source.scripts.app.files)
-      .pipe(gulpIgnore.exclude("**/*Spec.js"));
-  
-  if (ENV == ENV_PROD) {
-    scripts = scripts.pipe(concat(build.scripts.app.name))
-        .pipe(ngAnnotate())
-        .pipe(uglify());
-  }
-  
-  return scripts.pipe(gulp.dest(build.scripts.dir));
+  return gulp.src(source.scripts.app.files)
+      .pipe(gulpIgnore.exclude("**/*Spec.js"))
+      .pipe(gulpIf(ENV == ENV_PROD, concat(build.scripts.app.name)))
+      .pipe(gulpIf(ENV == ENV_PROD), ngAnnotate())
+      .pipe(gulpIf(ENV == ENV_PROD), uglify())
+      .pipe(gulp.dest(build.scripts.dir));
 });
 
 
@@ -148,13 +145,9 @@ gulp.task('scripts:vendor', function() {
  * the templates are first minified 
  */
 gulp.task('templates', function() {
-  var templates = gulp.src(source.templates.files);
-  
-  if (ENV == ENV_PROD)
-    templates = templates.pipe(minifyHTML())
-  
-  return templates
-      .pipe(angularTemplateCache(build.templates.name, { 
+  return gulp.src(source.templates.files)
+      .pipe(gulpIf(ENV == ENV_PROD, minifyHTML()))
+      .pipe(angularTemplateCache(build.templates.name, {
         module : MODULE_NAME, root : build.templates.rootPath
       }))
       .pipe(gulp.dest(build.templates.dir));
@@ -164,12 +157,10 @@ gulp.task('templates', function() {
  * Compiles app LESS files. If running in prod mode, files are minified.
  */
 gulp.task('styles', function() {
-  var styles = gulp.src(source.styles.files)
+  return gulp.src(source.styles.files)
       .pipe(less({paths : [BOWER_DIR, source.styles.dir]}))
-  if (ENV == ENV_PROD)
-    styles.pipe(minifyCSS({keepSpecialComments : 1}));
-  
-  return styles.pipe(gulp.dest(build.styles.dir));
+      .pipe(gulpIf(ENV == ENV_PROD, minifyCSS({keepSpecialComments : 1})))
+      .pipe(gulp.dest(build.styles.dir));
 });
 
 
@@ -191,13 +182,10 @@ gulp.task('app:index', function() {
   var sources = merge(otherSources, appScriptSources);
 
   // Do the actual script/stylesheet injections into the index page
-  var index = gulp.src(source.index.file)
-      .pipe(inject(sources, { ignorePath: build.index.ignore, relative : true }));
-  
-  if (ENV == ENV_PROD)
-    index = index.pipe(minifyHTML());
-
-  return index.pipe(gulp.dest(build.dir));
+  return gulp.src(source.index.file)
+      .pipe(inject(sources, { ignorePath: build.index.ignore, relative : true }))
+      .pipe(gulpIf(ENV == ENV_PROD, minifyHTML()))
+      .pipe(gulp.dest(build.dir));
 });
 
 
