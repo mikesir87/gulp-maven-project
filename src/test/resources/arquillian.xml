@@ -1,0 +1,18 @@
+<arquillian xmlns="http://jboss.org/schema/arquillian"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="
+    http://jboss.org/schema/arquillian
+    http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+  <container qualifier="wildfly-managed" default="true">
+    <configuration>
+      <property name="jbossHome">${wildfly.home}</property>
+      <property name="javaVmArguments">-Xmx1024m -XX:MaxPermSize=512m -Djboss.socket.binding.port-offset=50000</property>
+      <property name="managementPort">59990</property>
+    </configuration>
+  </container>
+
+  <extension qualifier="webdriver">
+    <property name="browser">chrome</property>
+  </extension>
+</arquillian>
