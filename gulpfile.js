@@ -55,16 +55,9 @@ var source = {
     },
   },
   styles : {
-    theme: {
-      dir : SOURCE_BASE_DIR + "/less/theme",
-      files : [ SOURCE_BASE_DIR + '/less/theme/*.less' ],
-      watch : SOURCE_BASE_DIR + "/less/theme/*.less"
-    },
-    custom: {
-      dir : "app/",
-      files : [ SOURCE_BASE_DIR + '/less/custom/*.less' ],
-      watch : SOURCE_BASE_DIR + '/less/custom/*.less'
-    }
+    dir : SOURCE_BASE_DIR + '/less/',
+    files : SOURCE_BASE_DIR + '/less/app.less',
+    watch : [ SOURCE_BASE_DIR + '/less/**/*.less', SOURCE_BASE_DIR + '/less/**/*.css' ]
   },
   templates : {
     files : [ SOURCE_BASE_DIR + '/templates/*.html', SOURCE_BASE_DIR + '/templates/**/*.html' ],
@@ -86,7 +79,7 @@ var build = {
   },
   styles : {
     dir : BUILD_BASE_DIR + "/css",
-    theme : { name : "theme.css" },
+    theme : { name : "styles.css" },
   },
   templates : {
     dir : BUILD_BASE_DIR + "/js",
@@ -167,28 +160,12 @@ gulp.task('templates', function() {
       .pipe(gulp.dest(build.templates.dir));
 });
 
-
-/**
- * Compiles theme LESS files. If running in prod mode, files are minified.
- */
-gulp.task('styles:theme', function() {
-  var styles = gulp.src(source.styles.theme.files)
-      .pipe(less({ paths : [BOWER_DIR, source.styles.theme.dir ] }))
-      .pipe(concat(build.styles.theme.name));
-  
-  if (ENV == ENV_PROD)
-    styles.pipe(minifyCSS({keepSpecialComments : 1}));
-  
-  return styles.pipe(gulp.dest(build.styles.dir));
-});
-
-
 /**
  * Compiles app LESS files. If running in prod mode, files are minified.
  */
-gulp.task('styles:custom', function() {
-  var styles = gulp.src(source.styles.custom.files)
-      .pipe(less({paths : [BOWER_DIR, source.styles.custom.dir]}))
+gulp.task('styles', function() {
+  var styles = gulp.src(source.styles.files)
+      .pipe(less({paths : [BOWER_DIR, source.styles.dir]}))
   if (ENV == ENV_PROD)
     styles.pipe(minifyCSS({keepSpecialComments : 1}));
   
@@ -300,7 +277,7 @@ gulp.task('build', function(callback) {
   console.log("Build using environment: " + ENV);
   return runSequence('clean',
       'bowerInstall',
-      ['styles:theme', 'styles:custom', 'scripts:vendor', 'scripts:app', 'templates'], 
+      ['styles', 'scripts:vendor', 'scripts:app', 'templates'],
       'app:index',
       'test',
       callback);
