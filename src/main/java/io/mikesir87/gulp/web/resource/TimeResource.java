@@ -1,7 +1,7 @@
 /*
  * File created on Feb 5, 2015 
  *
- * Copyright 2008-2013 Virginia Polytechnic Institute and State University
+ * Copyright 2008-2013 Michael Irwin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
