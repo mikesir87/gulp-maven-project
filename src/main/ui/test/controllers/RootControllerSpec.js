@@ -4,18 +4,14 @@ describe("angularApp module", function() {
   beforeEach(module('angularApp'));
 
   describe('RootController', function() {
-    var controller, scope;
+    var controller;
 
-    beforeEach(inject(function(_$rootScope_, $controller, $q) {
-      scope = _$rootScope_.$new();
-      
-      controller = $controller("RootController", { 
-        $scope : scope
-      });
+    beforeEach(inject(function(_$rootScope_, $controller) {
+      controller = $controller("RootController");
     }));
 
     it('scope should have Michael Irwin as name', function() {
-      expect(scope.name).toBe("Michael Irwin");
+      expect(controller.name).toBe("Michael Irwin");
     });
     
   });

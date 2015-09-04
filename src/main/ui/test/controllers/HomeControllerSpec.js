@@ -20,19 +20,19 @@ describe("angularApp module", function() {
     }));
 
     it('initializes correctly', function() {
-      expect(scope.currentTime).toBe(currentTime);
+      expect(controller.currentTime).toBe(currentTime);
     });
     
     it('refresh fetches a new time and updates the scope', function() {
       var newTime = 987654321;
 
       spyOn(TimeService, 'getCurrentTime').and.returnValue(deferred.promise);
-      scope.refreshTime();      
+      controller.refreshTime();
       expect(TimeService.getCurrentTime).toHaveBeenCalled();
 
       deferred.resolve(newTime);
       scope.$root.$digest();
-      expect(scope.currentTime).toBe(newTime);
+      expect(controller.currentTime).toBe(newTime);
     });
 
   });
