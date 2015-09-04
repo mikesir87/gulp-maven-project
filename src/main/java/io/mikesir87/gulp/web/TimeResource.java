@@ -1,7 +1,7 @@
 /*
  * File created on Feb 5, 2015 
  *
- * Copyright 2008-2013 Michael Irwin
+ * Copyright 2008-2015 Michael Irwin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
  * limitations under the License.
  *
  */
-package io.mikesir87.gulp.web.resource;
+package io.mikesir87.gulp.web;
 
 import java.util.Date;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -27,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.mikesir87.gulp.service.TimeService;
 
 /**
  * A simple resource that returns the current time
@@ -36,9 +38,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Path("/currentTime")
 public class TimeResource {
 
+  @Inject
+  protected TimeService timeService;
+
   @GET
   public Response getCurrentTime() {
-    return Response.ok(new TimeModel()).build();
+    TimeModel model = new TimeModel(timeService.getCurrentTime());
+    return Response.ok(model).build();
   }
   
   @XmlRootElement(name = "time")
@@ -46,6 +52,10 @@ public class TimeResource {
     
     @XmlValue
     @JsonProperty("time")
-    public Date time = new Date();
+    public Date time;
+
+    public TimeModel(Date date) {
+      this.time = date;
+    }
   }
 }
