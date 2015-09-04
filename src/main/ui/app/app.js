@@ -1,35 +1,34 @@
 (function() {
   
-  var uiStateConfig = function($stateProvider, $urlRouterProvider) {
-    $urlRouterProvider.otherwise("/");
-    
-    $stateProvider
-      .state('root', {
-        abstract : true,
-        templateUrl : 'templates/root.html',
-        controller : "RootController"
-      })
-      .state('root.home', {
-        url : "/",
-        templateUrl : 'templates/home.html',
-        controller : "HomeController",
-        resolve : {
-          currentTime : /*@ngInject*/ function(TimeService) {
-            return TimeService.getCurrentTime();
-          }
-        }
-      })
-      ;
-  };
+  angular.module("angularApp", ["ui.router"])
+      .config(['$stateProvider', '$urlRouterProvider', uiStateConfig])
+      .run(['$rootScope', errorHandler]);
 
-  var errorHandler = function($rootScope) {
+  function uiStateConfig($stateProvider, $urlRouterProvider) {
+    $urlRouterProvider.otherwise("/");
+
+    $stateProvider
+        .state('root', {
+          abstract : true,
+          templateUrl : 'templates/root.html',
+          controller : "RootController as rootCtrl"
+        })
+        .state('root.home', {
+          url : "/",
+          templateUrl : 'templates/home.html',
+          controller : "HomeController as ctrl",
+          resolve : {
+            currentTime : /*@ngInject*/ function(TimeService) {
+              return TimeService.getCurrentTime();
+            }
+          }
+        });
+  }
+
+  function errorHandler($rootScope) {
     $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error){
       console.error("Something bad happened:", error.stack);
     });
   };
 
-  angular.module("angularApp", ["ui.router"])
-      .config(['$stateProvider', '$urlRouterProvider', uiStateConfig])
-      .run(['$rootScope', errorHandler]);
-      
 })();

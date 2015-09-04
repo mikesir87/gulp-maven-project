@@ -1,15 +1,20 @@
 (function() {
 
-  var HomeController = function($scope, currentTime, TimeService) {
-    $scope.currentTime = currentTime;
-
-    $scope.refreshTime = function() {
-      TimeService.getCurrentTime().then(function(time) {
-        $scope.currentTime = time;
-      });
-    }
-  };
-
   angular.module("angularApp")
       .controller("HomeController", HomeController);
+
+  function HomeController($scope, currentTime, TimeService) {
+    var vm = this;
+    vm.currentTime = currentTime;
+    vm.refreshTime = refreshTime;
+
+    ////////
+
+    function refreshTime() {
+      TimeService
+          .getCurrentTime()
+          .then(function(time) { vm.currentTime = time; });
+    }
+  }
+
 })();
