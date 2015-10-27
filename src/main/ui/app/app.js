@@ -1,6 +1,6 @@
 (function() {
   
-  angular.module("angularApp", ["ui.router"])
+  angular.module("angularApp", ["ui.router", "demo.todo"])
       .config(['$stateProvider', '$urlRouterProvider', uiStateConfig])
       .run(['$rootScope', errorHandler]);
 

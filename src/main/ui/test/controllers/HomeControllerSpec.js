@@ -32,7 +32,7 @@ describe("angularApp module", function() {
       spyOn(TimeService, 'getCurrentTime').and.returnValue(deferred.promise);
       controller.refreshTime();
       expect(timeoutFn).not.toBeNull();
-      
+
       timeoutFn();
       expect(TimeService.getCurrentTime).toHaveBeenCalled();
 

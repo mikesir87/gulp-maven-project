@@ -4,9 +4,11 @@
       <a class="navbar-brand" href="#">An Angular App</a>
     </div>
     <ul class="nav navbar-nav navbar-right">
+      <li ui-sref-active="active"><a ui-sref="root.home" class="navbar-link">Time</a></li>
+      <li ui-sref-active="active"><a ui-sref="root.todo" class="navbar-link">Todo List</a></li>
        <li><a href="javascript:void(0)" class="navbar-link">Hello <span id="name-display">{{rootCtrl.name}}</span>!</a></li>
      </ul>
   </div>
-</div>s
+</div>
 
 <div ui-view></div>

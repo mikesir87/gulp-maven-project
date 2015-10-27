@@ -1,0 +1,74 @@
+<div class="container">
+  <div class="col-md-12">
+    <h2>Todo List</h2>
+
+    <button class="btn btn-primary" ng-if="!ctrl.displayAddForm" ng-click="ctrl.toggleDisplayAddForm()">
+      <i class="fa fa-plus"></i> Add Item
+    </button>
+
+    <div class="panel panel-primary" ng-if="ctrl.displayAddForm">
+      <div class="panel-heading">
+        <h2 class="panel-title">New Item</h2>
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal" name="ctrl.newItemForm" ng-submit="ctrl.addItem()">
+
+          <div class="form-group">
+            <label class="control-label col-md-1">Title</label>
+            <div class="col-md-3">
+              <input type="text" class="form-control" ng-model="ctrl.newItem.title" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-1">Description</label>
+            <div class="col-md-6">
+              <textarea class="form-control" ng-model="ctrl.newItem.description" required></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" ng-disabled="ctrl.newItemForm.$invalid" ng-show="!ctrl.addingItem">Add Item</button>
+          <button class="btn btn-primary" disabled ng-show="ctrl.addingItem"><i class="fa fa-spin fa-refresh"></i> Adding...</button>
+          <button class="btn btn-default" ng-click="ctrl.toggleDisplayAddForm()">Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <hr />
+
+    <h3>Todo List</h3>
+    <div ng-if="ctrl.items.length == 0">
+      <p>There are no items to display at this time! Try adding one!</p>
+    </div>
+
+    <div ng-if="ctrl.items.length > 0">
+      <div class="row todo-item" ng-repeat="item in ctrl.items" ng-class="{completed:item.completed}">
+        <div class="col-md-1">
+          <input type="checkbox" class="form-control" ng-model="item.completed" />
+        </div>
+        <div class="col-md-3">
+          {{ item.title }}
+        </div>
+        <div class="col-md-8">
+          {{ item.description }}
+        </div>
+      </div>
+
+      <ng-pluralize count="ctrl.items.length"
+                    when="{1: 'You have one item', 'other' : 'There are {} items!'}">
+      </ng-pluralize>
+
+      <div ng-show="ctrl.getNumCompleted() > 0">
+        <ng-pluralize count="ctrl.getNumCompleted()"
+                      when="{0: '', 1: 'One item has', 'other' : '{} items have'}">
+        </ng-pluralize>
+        been marked completed
+
+        <a class="btn btn-danger btn-xs" href="javascript:void(0)" ng-click="ctrl.removeCompleted()">
+          <i class="fa fa-trash"></i> Remove completed
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</div>
+

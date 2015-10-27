@@ -61,8 +61,8 @@ var source = {
     watch : [ SOURCE_BASE_DIR + '/less/**/*.less', SOURCE_BASE_DIR + '/less/**/*.css' ]
   },
   templates : {
-    files : [ SOURCE_BASE_DIR + '/templates/*.html', SOURCE_BASE_DIR + '/templates/**/*.html' ],
-    watch : SOURCE_BASE_DIR + "/templates/**"
+    files : [ SOURCE_BASE_DIR + '/app/**/*.html' ],
+    watch : SOURCE_BASE_DIR + "/app/**/*.html"
   },
   index : {
     file : SOURCE_BASE_DIR + "/index.html"
@@ -85,7 +85,7 @@ var build = {
   templates : {
     dir : BUILD_BASE_DIR + "/js",
     name : "templates.js",
-    rootPath : "templates/"
+    rootPath : ""
   },
   index : {
     file : BUILD_BASE_DIR + "/index.html",
@@ -121,6 +121,7 @@ gulp.task('bowerInstall', function(callback) {
 gulp.task('scripts:app', function() {
   return gulp.src(source.scripts.app.files)
       .pipe(gulpIgnore.exclude("**/*Spec.js"))
+      .pipe(angularFilesort())
       .pipe(concat(build.scripts.app.name))
       .pipe(gulpIf(ENV == ENV_PROD, ngAnnotate()))
       .pipe(gulpIf(ENV == ENV_PROD, uglify()))
@@ -134,7 +135,7 @@ gulp.task('scripts:app', function() {
 gulp.task('scripts:vendor', function() {
   return gulp.src(source.scripts.vendor.files)
       .pipe(expect(source.scripts.vendor.files))
-      .pipe(uglify())
+      .pipe(gulpIf(ENV == ENV_PROD, uglify()))
       .pipe(concat(build.scripts.vendor.name))
       .pipe(gulp.dest(build.scripts.dir));
 });

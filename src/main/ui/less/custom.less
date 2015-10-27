@@ -1,2 +1,20 @@
 // This file contains stylesheet changes that are beyond the "theme" and
 // more tailored to the application itself
+
+.todo-item {
+  &:nth-child(even) {
+    background-color: #e7e7e7;
+  }
+
+  &:nth-child(odd) {
+    background-color: #f8f8f8;
+  }
+
+  &.completed * {
+    text-decoration: line-through;
+  }
+
+  .col-md-3, .col-md-8 {
+    padding-top: 15px;
+  }
+}
