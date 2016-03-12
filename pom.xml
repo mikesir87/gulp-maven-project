@@ -342,6 +342,16 @@
     </dependency>
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>jboss-snapshot-repo</id>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <properties>
     <arquillian.browser>chrome</arquillian.browser>
     <arquillian.remoteReusable>false</arquillian.remoteReusable>
