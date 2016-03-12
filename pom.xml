@@ -154,9 +154,6 @@
   <profiles>
     <profile>
       <id>arquillian-managed-wildfly</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
       <dependencies>
         <dependency>
           <groupId>org.wildfly</groupId>
@@ -202,6 +199,44 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+
+    <profile>
+      <id>arquillian-docker</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.arquillian.cube</groupId>
+          <artifactId>arquillian-cube-docker</artifactId>
+          <version>1.0.0.Final-SNAPSHOT</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.wildfly</groupId>
+          <artifactId>wildfly-arquillian-container-remote</artifactId>
+          <version>${wildfly.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <arquillian.launch>wildfly-docker</arquillian.launch>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <arquillian.remoteReusable>true</arquillian.remoteReusable>
+        <arquillian.remoteAddress>http://docker:4444/wd/hub/</arquillian.remoteAddress>
+      </properties>
     </profile>
   </profiles>
 
@@ -255,7 +290,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>2.4.2</version>
+      <version>2.6.4</version>
     </dependency>
 
     <dependency>
@@ -308,6 +343,10 @@
   </dependencies>
 
   <properties>
+    <arquillian.browser>chrome</arquillian.browser>
+    <arquillian.remoteReusable>false</arquillian.remoteReusable>
+    <arquillian.remoteAddress>http://localhost:14444/wd/hub</arquillian.remoteAddress>
+
     <javaEE.version>7.0</javaEE.version>
     <java.version.source>1.7</java.version.source>
     <java.version.target>${java.version.source}</java.version.target>

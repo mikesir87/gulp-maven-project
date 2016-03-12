@@ -46,7 +46,7 @@ public class TimeResourceTest {
 
     Response response = resource.getCurrentTime();
     assertThat(response.getStatus(), is(equalTo(Response.Status.OK.getStatusCode())));
-    
+
     assertThat(response.getEntity(), is(instanceOf(TimeResource.TimeModel.class)));
     TimeResource.TimeModel model = (TimeResource.TimeModel) response.getEntity();
     assertThat(model.time, is(sameInstance(date)));

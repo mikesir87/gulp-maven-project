@@ -52,7 +52,7 @@ public class ApplicationFT {
   private URL deploymentUrl;
 
   @Test
-  public void testRefreshButton(@InitialPage IndexPage indexPage) {
+  public void testRefreshButton(@InitialPage IndexPage indexPage) throws Exception {
     String timeDisplay = indexPage.assertOnPage().getTimeDisplay();
     String newDisplay = indexPage.clickRefreshButton().getTimeDisplay();
     assertThat(timeDisplay, is(not(equalTo(newDisplay))));

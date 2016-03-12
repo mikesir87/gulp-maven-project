@@ -30,9 +30,9 @@ public class IndexPage {
   @FindBy(id = "refresh-button")
   private WebElement refreshButton;
 
-  public IndexPage assertOnPage() {
+  public IndexPage assertOnPage() throws Exception {
     assertThat(browser.getTitle(), containsString("Sample Gulp Application"));
-    waitGui().withTimeout(2, TimeUnit.SECONDS).until()
+    waitGui().withTimeout(5, TimeUnit.SECONDS).until()
         .element(timeDisplay).is().present();
     return this;
   }

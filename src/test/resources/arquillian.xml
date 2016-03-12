@@ -12,7 +12,42 @@
     </configuration>
   </container>
 
+  <container qualifier="wildfly-docker">
+    <configuration>
+      <property name="username">admin</property>
+      <property name="password">admin</property>
+      <property name="managementPort">9990</property>
+    </configuration>
+  </container>
+
+  <extension qualifier="docker">
+    <property name="serverVersion">1.12</property>
+    <property name="machineName">default</property>
+    <property name="clean">true</property>
+    <property name="autoStartContainers">selenium</property>
+    <property name="dockerContainers">
+      wildfly-docker:
+        buildImage:
+          dockerfileLocation: src/test/resources/docker
+        portBindings: [8080/tcp, 9990/tcp]
+      selenium:
+        image: selenium/standalone-${arquillian.browser}
+        links:
+          - wildfly-docker:wildfly
+        portBindings: [4444/tcp]
+        await:
+          strategy: sleeping
+          sleepTime: 3s
+    </property>
+  </extension>
+
   <extension qualifier="webdriver">
-    <property name="browser">chrome</property>
+    <property name="browser">${arquillian.browser}</property>
+    <property name="remoteReusable">${arquillian.remoteReusable}</property>
+    <property name="remoteAddress">${arquillian.remoteAddress}</property>
+  </extension>
+
+  <extension qualifier="graphene">
+    <property name="url">http://wildfly:8080/gulp-maven-project/</property>
   </extension>
 </arquillian>
