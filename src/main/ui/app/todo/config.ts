@@ -1,20 +1,20 @@
-(function() {
+namespace App {
 
-  angular.module("demo.todo")
-      .config(uiStateConfig);
-
-  function uiStateConfig($stateProvider) {
+  function uiStateConfig($stateProvider : angular.ui.IStateProvider) {
     $stateProvider
         .state('root.todo', {
           url : "/todo",
           templateUrl : 'todo/todo.html',
           controller : "TodoController as ctrl",
           resolve : {
-            items : function(TodoService) {
+            items : function(TodoService : TodoService) {
               return TodoService.getAllItems();
             }
           }
         });
   }
 
-})();
+    angular.module("demo.todo")
+        .config(uiStateConfig);
+
+}

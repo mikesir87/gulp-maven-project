@@ -1,4 +1,4 @@
-(function () {
+namespace App {
 
   /**
    * @ngdoc overview
@@ -10,4 +10,4 @@
   angular
       .module("demo.todo", ["ui.router"]);
 
-})();
+}
