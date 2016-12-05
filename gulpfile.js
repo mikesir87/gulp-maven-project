@@ -1,28 +1,18 @@
-var del                    = require('del'),
-    gulp                   = require('gulp'),
-    angularFilesort        = require('gulp-angular-filesort'),
-    angularTemplateCache   = require('gulp-angular-templatecache'),
-    bower                  = require('gulp-bower'),
-    concat                 = require('gulp-concat'),
-    expect                 = require('gulp-expect-file'),
-    gulpIf                 = require('gulp-if'),
-    gulpIgnore             = require('gulp-ignore'),
-    inject                 = require('gulp-inject'),
-    karma                  = require('karma').server,
-    less                   = require('gulp-less'),
-    livereload             = require('gulp-livereload'),
-    merge                  = require('gulp-merge'),
-    minifyHTML             = require('gulp-minify-html'),
-    minifyCSS              = require('gulp-minify-css'),
-    ngAnnotate             = require('gulp-ng-annotate'),
-    runSequence            = require('run-sequence'),
-    uglify                 = require('gulp-uglify'),
-    watch                  = require('gulp-watch'),
-    http                   = require('http'),
-    httpProxy              = require('http-proxy'),
-    serveStatic            = require('serve-static'),
-    finalhandler           = require('finalhandler');
+var $ = require('gulp-load-plugins')({
+    pattern: [
+        'gulp-*', 'gulp.*',
+        'main-bower-files',
+        'uglify-save-license',
+        'del',
+        'merge-stream',
+        'run-sequence',
+        'karma',
+        'http', 'http-proxy', 'serve-static', 'finalhandler'
+    ]
+});
 
+var gulp                   = require('gulp'),
+    karma                  = require('karma').server;
 
 var ENV_PROD = "PROD";
 var ENV_DEV = "DEV";
@@ -104,14 +94,14 @@ var build = {
  * Clean the webapp folder. Remove all the 
  */
 gulp.task('clean', function(callback) {
-  return del([ TARGET_DIR ], callback);
+  return $.del([ TARGET_DIR ], callback);
 });
 
 /**
  * Install bower components
  */
 gulp.task('bowerInstall', function(callback) {
-  return bower({ directory : BOWER_DIR });
+  return $.bower({ directory : BOWER_DIR });
 });
 
 
@@ -120,11 +110,11 @@ gulp.task('bowerInstall', function(callback) {
  */
 gulp.task('scripts:app', function() {
   return gulp.src(source.scripts.app.files)
-      .pipe(gulpIgnore.exclude("**/*Spec.js"))
-      .pipe(angularFilesort())
-      .pipe(concat(build.scripts.app.name))
-      .pipe(gulpIf(ENV == ENV_PROD, ngAnnotate()))
-      .pipe(gulpIf(ENV == ENV_PROD, uglify()))
+      .pipe($.ignore.exclude("**/*Spec.js"))
+      .pipe($.angularFilesort())
+      .pipe($.concat(build.scripts.app.name))
+      .pipe($.if(ENV == ENV_PROD, $.ngAnnotate()))
+      .pipe($.if(ENV == ENV_PROD, $.uglify()))
       .pipe(gulp.dest(build.scripts.dir));
 });
 
@@ -134,9 +124,9 @@ gulp.task('scripts:app', function() {
  */
 gulp.task('scripts:vendor', function() {
   return gulp.src(source.scripts.vendor.files)
-      .pipe(expect(source.scripts.vendor.files))
-      .pipe(gulpIf(ENV == ENV_PROD, uglify()))
-      .pipe(concat(build.scripts.vendor.name))
+      .pipe($.expectFile(source.scripts.vendor.files))
+      .pipe($.if(ENV == ENV_PROD, $.uglify()))
+      .pipe($.concat(build.scripts.vendor.name))
       .pipe(gulp.dest(build.scripts.dir));
 });
 
@@ -147,8 +137,8 @@ gulp.task('scripts:vendor', function() {
  */
 gulp.task('templates', function() {
   return gulp.src(source.templates.files)
-      .pipe(gulpIf(ENV == ENV_PROD, minifyHTML()))
-      .pipe(angularTemplateCache(build.templates.name, {
+      .pipe($.if(ENV == ENV_PROD, $.minifyHtml()))
+      .pipe($.angularTemplatecache(build.templates.name, {
         module : MODULE_NAME, root : build.templates.rootPath
       }))
       .pipe(gulp.dest(build.templates.dir));
@@ -159,8 +149,8 @@ gulp.task('templates', function() {
  */
 gulp.task('styles', function() {
   return gulp.src(source.styles.files)
-      .pipe(less({paths : [BOWER_DIR, source.styles.dir]}))
-      .pipe(gulpIf(ENV == ENV_PROD, minifyCSS({keepSpecialComments : 1})))
+      .pipe($.less({paths : [BOWER_DIR, source.styles.dir]}))
+      .pipe($.if(ENV == ENV_PROD, $.minifyCss({keepSpecialComments : 1})))
       .pipe(gulp.dest(build.styles.dir));
 });
 
@@ -172,20 +162,20 @@ gulp.task('app:index', function() {
   // Get all app sources and ensure they are included in the proper order for
   // the app to load (angularFileSor)
   var appScriptSources = gulp.src([build.dir + "/**/*.js"])
-                             .pipe(gulpIgnore.exclude("**/" + build.scripts.vendor.name))
-                             .pipe(angularFilesort());
+                             .pipe($.ignore.exclude("**/" + build.scripts.vendor.name))
+                             .pipe($.angularFilesort());
   
   // Get the vendor script (which will need to go first) and stylesheets
   var otherSources = gulp.src([build.scripts.dir + "/" + build.scripts.vendor.name,
                                build.styles.dir + "/" + build.styles.theme.name,
                                build.styles.dir + "/*.css"], {read: false});
   
-  var sources = merge(otherSources, appScriptSources);
+  var sources = $.merge(otherSources, appScriptSources);
 
   // Do the actual script/stylesheet injections into the index page
   return gulp.src(source.index.file)
-      .pipe(inject(sources, { ignorePath: build.index.ignore, relative : true }))
-      .pipe(gulpIf(ENV == ENV_PROD, minifyHTML()))
+      .pipe($.inject(sources, { ignorePath: build.index.ignore, relative : true }))
+      .pipe($.if(ENV == ENV_PROD, $.minifyHtml()))
       .pipe(gulp.dest(build.dir));
 });
 
@@ -199,16 +189,16 @@ gulp.task('watch', function() {
    * Separate watch globs are needed here because wildcarding such as ** /*.js
    * doesn't work when new files are added (https://github.com/floatdrop/gulp-watch/issues/29)
    */
-  watch(source.scripts.app.watch,   function() { gulp.start('scripts:app'); gulp.start('app:index'); });
-  watch(source.templates.watch,     function() { gulp.start('templates') });
-  watch(source.styles.watch,        function() { gulp.start('styles') });
-  watch(source.app.watch,           function() { gulp.start('app:index') });
+  $.watch(source.scripts.app.watch,   function() { gulp.start('scripts:app'); gulp.start('app:index'); });
+  $.watch(source.templates.watch,     function() { gulp.start('templates') });
+  $.watch(source.styles.watch,        function() { gulp.start('styles') });
+  $.watch(source.app.watch,           function() { gulp.start('app:index') });
   
   // Using livereload for listening because it's much more responsive than the
   // livereload found in the webserver
-  livereload.listen();
-  watch(build.watch, function(evt) {
-    livereload.changed(evt);
+  $.livereload.listen();
+  $.watch(build.watch, function(evt) {
+    $.livereload.changed(evt);
   });
 
   gulp.start('serve');
@@ -218,9 +208,9 @@ gulp.task('watch', function() {
 gulp.task('serve', function(callback) {
   var numProxyConfigs = PROXY_PATHS.length;
 
-  var serve = serveStatic(TARGET_DIR);  // static content handler
-  var proxy = httpProxy.createProxyServer({ target : { host : 'localhost', port : '8080' }});  // proxy handler
-  var server = http.createServer(function(req, res) {  // actual webserver
+  var serve = $.serveStatic(TARGET_DIR);  // static content handler
+  var proxy = $.httpProxy.createProxyServer({ target : { host : 'localhost', port : '8080' }});  // proxy handler
+  var server = $.http.createServer(function(req, res) {  // actual webserver
     for (var i = 0; i < numProxyConfigs; i++) {
       if (req.url.indexOf(PROXY_PATHS[i]) > -1) {
         return proxy.web(req, res, {
@@ -235,7 +225,7 @@ gulp.task('serve', function(callback) {
       return;
     }
 
-    var done = finalhandler(req, res)
+    var done = $.finalhandler(req, res);
     serve(req, res, done);
   });
 
@@ -263,7 +253,7 @@ gulp.task('test', function(callback) {
  */
 gulp.task('build', function(callback) {
   console.log("Build using environment: " + ENV);
-  return runSequence('clean',
+  return $.runSequence('clean',
       'bowerInstall',
       ['styles', 'scripts:vendor', 'scripts:app', 'templates'],
       'app:index',
@@ -285,7 +275,7 @@ gulp.task('build:prod', function(callback) {
  * The default task.  Performs a dev build and starts watching the files
  */
 gulp.task('default', function(callback) {
-  return runSequence('build', 'watch', callback);
+  return $.runSequence('build', 'watch', callback);
 });
 
 
