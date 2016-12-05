@@ -44,3 +44,5 @@ test-results.xml
 src/main/webapp/**/*.js
 src/main/webapp/**/*.css
 src/main/webapp/**/*.html
+
+/typings

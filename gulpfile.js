@@ -41,7 +41,7 @@ var source = {
       files : require('./vendor.json')
     },
     app : {
-      files: [SOURCE_BASE_DIR + '/app/app.js', SOURCE_BASE_DIR + '/app/**/*.js'],
+      files: [SOURCE_BASE_DIR + '/**/*.ts'],
       watch: SOURCE_BASE_DIR + "/app/**"
     },
   },
@@ -109,8 +109,11 @@ gulp.task('bowerInstall', function(callback) {
  * Concat all app scripts. Performs minification when running in prod mode
  */
 gulp.task('scripts:app', function() {
+  var tsProject = $.typescript.createProject('src/main/ui/tsconfig.json');
+
   return gulp.src(source.scripts.app.files)
       .pipe($.ignore.exclude("**/*Spec.js"))
+      .pipe(tsProject())
       .pipe($.angularFilesort())
       .pipe($.concat(build.scripts.app.name))
       .pipe($.if(ENV == ENV_PROD, $.ngAnnotate()))
