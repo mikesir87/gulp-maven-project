@@ -5,7 +5,7 @@
   "main": "gulpfile.js",
   "author": "",
   "license": "MIT",
-  "script": {
+  "scripts": {
     "postinstall": "typings install"
   },
   "devDependencies": {
